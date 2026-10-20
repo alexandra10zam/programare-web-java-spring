@@ -10,8 +10,6 @@ public class Main {
 
         try (var context =
                      new AnnotationConfigApplicationContext(AppConfig.class)) {
-
-            // TODO 1: Inainte sa rulati, notati in ce ORDINE credeti ca vor aparea mesajele.
             System.out.println("=== Context created ===");
             BookingService bookingService = context.getBean(BookingService.class);
 

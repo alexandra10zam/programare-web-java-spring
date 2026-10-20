@@ -10,8 +10,6 @@ public class Main {
 
         try (var context =
                      new AnnotationConfigApplicationContext(AppConfig.class)) {
-
-            // TODO 1: Rulati clasa INAINTE de orice modificare si notati numele clasei bean-ului.
             System.out.println("=== Context created ===");
 
             BookingService bookingService = context.getBean(BookingService.class);

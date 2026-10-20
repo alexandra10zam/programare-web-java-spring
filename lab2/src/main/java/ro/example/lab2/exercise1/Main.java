@@ -13,9 +13,6 @@ public class Main {
 
         try (var context =
                      new AnnotationConfigApplicationContext(AppConfig.class)) {
-
-            // TODO 1: Rulati clasa. Exista un catalog sau doua?
-            // Ana si Ion sunt doi clienti diferiti: ce bilete are fiecare?
             System.out.println("=== Context created ===");
 
             MovieCatalog catalog1 = context.getBean(MovieCatalog.class);
@@ -34,9 +31,6 @@ public class Main {
             System.out.println("Ana's tickets: " + anaReservation.getTickets());
             System.out.println("Ion's tickets: " + ionReservation.getTickets());
             System.out.println("Same reservation object? " + (anaReservation == ionReservation));
-
-            // TODO 3: Dupa ce adaugati @Scope, rulati din nou.
-            // Numarati mesajele "[Spring] Reservation created".
         }
     }
 }

@@ -1,10 +1,11 @@
 package ro.example.lab2.exercise3.service;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 // Bean "greu": conectarea la imprimanta dureaza, iar putini clienti vor bilete pe hartie.
 @Component
-// TODO 2: Adaugati @Lazy si rulati din nou. Mai este creat la pornire?
+@Lazy
 public class TicketPrinter {
 
     public TicketPrinter() throws InterruptedException {

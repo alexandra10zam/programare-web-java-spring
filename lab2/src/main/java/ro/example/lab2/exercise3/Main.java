@@ -8,9 +8,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // TODO 1: Rulati clasa. TicketPrinter este creat inainte sau dupa "2. Context created"?
-        // Cat dureaza pornirea?
-
         System.out.println("1. Creating the Spring context...");
         long start = System.currentTimeMillis();
 
