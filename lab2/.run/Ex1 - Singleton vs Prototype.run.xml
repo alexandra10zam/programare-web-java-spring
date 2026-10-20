@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Ex1 - Singleton vs Prototype" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="ro.example.lab2.exercise1.Main" />
+    <module name="lab2" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

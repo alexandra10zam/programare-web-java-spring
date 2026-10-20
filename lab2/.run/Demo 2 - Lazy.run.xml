@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Demo 2 - Lazy" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="ro.example.lab2.demo.lazy.DemoLazy" />
+    <module name="lab2" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
