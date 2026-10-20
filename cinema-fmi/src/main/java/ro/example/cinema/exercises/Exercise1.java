@@ -14,9 +14,6 @@ public class Exercise1 {
 
         try (AnnotationConfigApplicationContext context =
                      new AnnotationConfigApplicationContext(AppConfig.class)) {
-
-            // TODO 1.1: Run this class. Is there one catalog or two?
-            // Ana and Ion are two different clients: which seats does each of them have?
             System.out.println("--- Context created ---");
 
             MovieCatalog catalog1 = context.getBean(MovieCatalog.class);
@@ -35,8 +32,6 @@ public class Exercise1 {
             System.out.println("Ana's tickets: " + anaReservation.getTickets());
             System.out.println("Ion's tickets: " + ionReservation.getTickets());
             System.out.println("Same reservation object? " + (anaReservation == ionReservation));
-
-            // TODO 1.3: After adding @Scope, run again. Count the "[Spring] Reservation created" messages.
         }
     }
 }

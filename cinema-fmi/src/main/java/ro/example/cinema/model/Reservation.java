@@ -1,5 +1,7 @@
 package ro.example.cinema.model;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -7,7 +9,7 @@ import java.util.List;
 
 // A reservation has STATE that changes: every client needs their own.
 @Component
-// TODO 1.2: Make this bean prototype: @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class Reservation {
 
     private final List<Ticket> tickets = new ArrayList<>();
