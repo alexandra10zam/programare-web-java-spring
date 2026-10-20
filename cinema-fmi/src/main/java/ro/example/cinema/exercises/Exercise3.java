@@ -9,9 +9,6 @@ public class Exercise3 {
 
     public static void main(String[] args) {
 
-        // TODO 3.1: Run this class. When is TicketPrinter created:
-        // before or after "2. Context created"? How long does the startup take?
-
         System.out.println("1. Creating the Spring context...");
         long start = System.currentTimeMillis();
 

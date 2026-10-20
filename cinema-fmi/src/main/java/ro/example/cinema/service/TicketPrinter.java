@@ -1,10 +1,11 @@
 package ro.example.cinema.service;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 // Heavy bean: connecting to the ticket printer is slow, and few clients want paper tickets.
 @Component
-// TODO 3.2: Add @Lazy and run Exercise3 again. Is the printer still created at startup?
+@Lazy
 public class TicketPrinter {
 
     public TicketPrinter() throws InterruptedException {
