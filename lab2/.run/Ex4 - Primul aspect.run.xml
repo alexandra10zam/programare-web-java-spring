@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Ex4 - Primul aspect" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="ro.example.lab2.exercise4.Main" />
+    <module name="lab2" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

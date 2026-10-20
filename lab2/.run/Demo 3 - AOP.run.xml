@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Demo 3 - AOP" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="ro.example.lab2.demo.aop.DemoAop" />
+    <module name="lab2" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
