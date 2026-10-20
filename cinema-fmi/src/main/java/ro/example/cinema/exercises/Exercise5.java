@@ -11,8 +11,6 @@ public class Exercise5 {
 
         try (AnnotationConfigApplicationContext context =
                      new AnnotationConfigApplicationContext(AppConfig.class)) {
-
-            // Before running: write down in which ORDER you expect the messages to appear.
             System.out.println("--- Context created ---");
             BookingService bookingService = context.getBean(BookingService.class);
 
