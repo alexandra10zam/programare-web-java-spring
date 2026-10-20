@@ -1,5 +1,7 @@
 # FMI Shop – Spring Core: Bean Scopes, Lazy Instantiation & Aspects
 
+> **Laboratoare în acest repository:** FMI Shop (proiectul din rădăcină) și **Cinema FMI** (folderul [`cinema-fmi`](cinema-fmi/README.md)). Deschideți în IntelliJ folderul laboratorului la care lucrați.
+
 În acest laborator lucrăm la **FMI Shop**, un mic magazin online, fără bază de date și fără server web. Fiecare exercițiu pornește de la codul lăsat de exercițiul anterior și modifică **aceleași clase**: problema descoperită într-un exercițiu e rezolvată în următorul.
 
 **Durată:** ~70 de minute.
