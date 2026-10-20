@@ -1,22 +1,24 @@
 package ro.example.cinema.aspect;
 
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
-// TODO 4.1: Annotate this class with @Aspect and @Component.
+@Aspect
+@Component
 public class AuditAspect {
 
-    // TODO 4.2: Annotate this method with
-    // @Around("execution(* ro.example.cinema.service.BookingService.*(..))")
+    // Pointcut: every method of BookingService.
+    @Around("execution(* ro.example.cinema.service.BookingService.*(..))")
     public Object audit(ProceedingJoinPoint joinPoint) throws Throwable {
         String method = joinPoint.getSignature().getName();
         System.out.println("[AUDIT] " + method + " called with " + Arrays.deepToString(joinPoint.getArgs()));
         long start = System.nanoTime();
 
-        // TODO 4.3: Call the real method and keep its result:
-        // Object result = joinPoint.proceed();
-        Object result = null;
+        Object result = joinPoint.proceed();   // calls the real method
 
         long duration = (System.nanoTime() - start) / 1000;
         System.out.println("[AUDIT] " + method + " returned " + result + " in " + duration + " microseconds");

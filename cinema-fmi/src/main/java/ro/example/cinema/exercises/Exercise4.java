@@ -11,8 +11,6 @@ public class Exercise4 {
 
         try (AnnotationConfigApplicationContext context =
                      new AnnotationConfigApplicationContext(AppConfig.class)) {
-
-            // Run this class BEFORE and AFTER the TODOs. Compare the bean class name.
             System.out.println("--- Context created ---");
 
             BookingService bookingService = context.getBean(BookingService.class);

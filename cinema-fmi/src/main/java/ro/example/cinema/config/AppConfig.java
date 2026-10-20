@@ -2,9 +2,10 @@ package ro.example.cinema.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @Configuration
 @ComponentScan("ro.example.cinema")
-// TODO 4.4: Enable the aspect mechanism with @EnableAspectJAutoProxy.
+@EnableAspectJAutoProxy
 public class AppConfig {
 }
