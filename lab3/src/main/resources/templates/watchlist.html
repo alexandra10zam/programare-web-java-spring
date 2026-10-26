@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cinema FMI - My watch list</title>
+</head>
+<body>
+
+<h1>My watch list</h1>
+
+<form th:action="@{/watchlist}" method="post">
+    <select name="movieId">
+        <option th:each="movie : ${movies}"
+                th:value="${movie.id}"
+                th:text="${movie.title}">Movie</option>
+    </select>
+    <button type="submit">Add to my list</button>
+</form>
+
+<ul>
+    <li th:each="movie : ${watchList}" th:text="${movie.title}">Movie</li>
+</ul>
+<p th:if="${#lists.isEmpty(watchList)}">Your list is empty.</p>
+
+<hr>
+<p>Request ID: <b th:text="${requestId}">-</b></p>
+<p>Total page visits (all users): <b th:text="${visits}">0</b></p>
+
+<a th:href="@{/movies}">Back to movies</a>
+
+</body>
+</html>
