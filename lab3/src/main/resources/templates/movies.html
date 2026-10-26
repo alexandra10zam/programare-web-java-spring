@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cinema FMI - Movies</title>
+</head>
+<body>
+
+<h1>Cinema FMI</h1>
+<h2>Now showing</h2>
+<a th:href="@{/bookings/new}">Book tickets</a>
+<br><br>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Genre</th>
+        <th>Price (RON)</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <!-- TODO 1.3: Folositi th:each pe <tr> pentru a parcurge lista "movies":  th:each="movie : ${movies}" -->
+
+    <tr>
+        <!-- TODO 1.4: Folositi th:text pentru a afisa id, title, genre si price pentru fiecare film,
+             de exemplu:  th:text="${movie.title}" -->
+        <td>1</td>
+        <td>Example Movie</td>
+        <td>Example Genre</td>
+        <td>0</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

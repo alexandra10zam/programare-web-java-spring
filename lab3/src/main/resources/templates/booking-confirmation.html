@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cinema FMI - Booking confirmed</title>
+</head>
+<body>
+
+<h1>Booking confirmed</h1>
+
+<p>Booking #<span th:text="${booking.id}">0</span></p>
+<p>Client: <span th:text="${booking.clientName}">Name</span></p>
+<p>Movie: <span th:text="${booking.movieTitle}">Movie</span></p>
+<p>Seats: <span th:text="${booking.seats}">1</span></p>
+<p>Total: <span th:text="${booking.total}">0</span> RON</p>
+
+<a th:href="@{/bookings/new}">New booking</a> |
+<a th:href="@{/movies}">Back to movies</a>
+
+</body>
+</html>

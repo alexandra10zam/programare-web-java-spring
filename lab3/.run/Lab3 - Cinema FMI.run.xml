@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Lab3 - Cinema FMI" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="ro.example.lab3.Lab3Application" />
+    <module name="lab3" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
