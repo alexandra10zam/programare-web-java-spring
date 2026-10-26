@@ -57,11 +57,7 @@ Dependențele Spring sunt gestionate automat prin Maven, conform fișierului `po
 2. Deschideți IntelliJ IDEA.
 3. Selectați **File → Open** și alegeți folderul laboratorului dorit, de exemplu `lab2` sau `lab3`.
 4. Verificați că proiectul utilizează **JDK 21**.
-<<<<<<< HEAD
-5. Așteptați importarea proiectului Maven și descărcarea dependențelor din `lab2/pom.xml`.
-=======
 5. Așteptați importarea proiectului Maven și descărcarea dependențelor din `pom.xml`-ul laboratorului.
->>>>>>> main
 6. Alegeți exercițiul din lista de configurații de lângă butonul **Run** (sus, în dreapta): `Ex1 - Singleton vs Prototype` … `Ex5 - Tipurile de advice`, apoi apăsați **Run**.
    Alternativ, deschideți clasa `Main.java` din exercițiul dorit și apăsați triunghiul verde de lângă metoda `main()`.
 
