@@ -1,5 +1,7 @@
 package ro.example.lab2.exercise1.model;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -7,7 +9,7 @@ import java.util.List;
 
 // O rezervare are STARE care se schimba: fiecare client are nevoie de propria rezervare.
 @Component
-// TODO 2: Faceti bean-ul prototype: @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class Reservation {
 
     private final List<Ticket> tickets = new ArrayList<>();

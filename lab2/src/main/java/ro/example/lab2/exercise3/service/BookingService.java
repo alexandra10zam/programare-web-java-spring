@@ -14,7 +14,7 @@ public class BookingService {
     private final MovieCatalog catalog;
     private final ObjectProvider<Reservation> reservationProvider;
     private final PaymentService paymentService;
-    private final TicketPrinter printer;
+    private final ObjectProvider<TicketPrinter> printer;
 
     // TODO 3: TicketPrinter este cerut in constructor, deci e creat odata cu BookingService.
     // Folositi ObjectProvider<TicketPrinter>, la fel ca pentru rezervare la exercitiul 2,
@@ -23,7 +23,7 @@ public class BookingService {
     public BookingService(MovieCatalog catalog,
                           ObjectProvider<Reservation> reservationProvider,
                           PaymentService paymentService,
-                          TicketPrinter printer) {
+                          ObjectProvider<TicketPrinter> printer) {
         System.out.println("   [Spring] BookingService created");
         this.catalog = catalog;
         this.reservationProvider = reservationProvider;
@@ -43,6 +43,6 @@ public class BookingService {
     }
 
     public void printTickets(String receipt) {
-        printer.print(receipt);
+        printer.getObject().print(receipt);
     }
 }
