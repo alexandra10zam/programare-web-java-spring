@@ -27,6 +27,13 @@ programare-web-java-spring/
 │       │   ├── scope/
 │       │   └── service/
 │       └── resources/templates/
+├── lab4/
+│   ├── pom.xml
+│   ├── requests.http
+│   └── src/main/java/ro/example/lab4/
+│       ├── controller/
+│       ├── model/
+│       └── service/
 ├── README.md
 └── .gitignore
 ```
@@ -34,6 +41,7 @@ programare-web-java-spring/
 **Laboratoare:**
 - **Laboratorul 2:** Spring Core – Bean Scopes, Lazy Initialization & AOP
 - **Laboratorul 3:** Spring Boot & Spring MVC
+- **Laboratorul 4:** REST Web Services
 
 ## Cerințe generale
 
@@ -55,7 +63,7 @@ Dependențele Spring sunt gestionate automat prin Maven, conform fișierului `po
    Alternativ, puteți descărca proiectul folosind **Code → Download ZIP** din GitHub.
 
 2. Deschideți IntelliJ IDEA.
-3. Selectați **File → Open** și alegeți folderul laboratorului dorit, de exemplu `lab2` sau `lab3`.
+3. Selectați **File → Open** și alegeți folderul laboratorului dorit, de exemplu `lab2`, `lab3` sau `lab4`.
 4. Verificați că proiectul utilizează **JDK 21**.
 5. Așteptați importarea proiectului Maven și descărcarea dependențelor din `pom.xml`-ul laboratorului.
 6. Alegeți exercițiul din lista de configurații de lângă butonul **Run** (sus, în dreapta): `Ex1 - Singleton vs Prototype` … `Ex5 - Tipurile de advice`, apoi apăsați **Run**.
@@ -234,3 +242,87 @@ La finalul laboratorului, studenții ar trebui să poată:
 - Codul de completat este marcat cu `TODO x.y` (exercițiul `x`, pasul `y`), atât în clasele Java, cât și în template-urile HTML.
 - Template-urile Thymeleaf se află în `src/main/resources/templates`.
 - Nu este necesară o bază de date: datele sunt ținute în memorie, în clasele din pachetul `service`.
+
+---
+
+# Laboratorul 4 – REST Web Services
+
+**Durată:** 70 de minute.
+
+Construim **API-ul REST** al aplicației **Cinema FMI**: în loc de pagini HTML, serverul trimite și primește **JSON**. Lucrăm pe o singură resursă, filmele, la URI-ul `/api/movies`. Exercițiile se leagă între ele: la exercițiul 1 citim filmele, la exercițiul 2 le creăm, modificăm și ștergem, iar la exercițiul 3 corectăm codurile de status descoperite la primele două.
+
+Tot codul de completat este în `controller/MovieRestController.java`. Clasa `MovieService` este deja scrisă.
+
+## Pornirea aplicației
+
+1. Deschideți folderul `lab4` în IntelliJ IDEA (**File → Open → lab4**) și așteptați importarea proiectului Maven.
+2. Rulați configurația `Lab4 - Cinema FMI API` (sau clasa `Lab4Application`).
+3. În consolă trebuie să apară `Tomcat started on port 8080`.
+4. Cererile **GET** se pot deschide direct din browser, pornind de la [http://localhost:8080](http://localhost:8080).
+5. Pentru **POST**, **PUT** și **DELETE**, deschideți fișierul `requests.http` și apăsați săgeata verde din stânga fiecărei cereri. Răspunsul (status, headere, body) apare în fereastra de jos.
+
+**Important:** După fiecare modificare în cod, opriți aplicația și porniți-o din nou. Datele sunt ținute în memorie, deci la repornire revin cele 4 filme inițiale.
+
+## Obiective
+
+La finalul laboratorului, studenții ar trebui să poată:
+
+- Explica noțiunile de **resursă**, **URI** și **reprezentare** (JSON).
+- Scrie un `@RestController` și explica diferența față de `@Controller`.
+- Proiecta URI-uri după bunele practici REST: `/api/...`, substantive la plural, identificatorul în cale.
+- Folosi `@PathVariable`, `@RequestParam` și `@RequestBody`.
+- Asocia operațiile **CRUD** cu metodele HTTP: `GET`, `POST`, `PUT`, `DELETE`.
+- Explica ce înseamnă o metodă **safe** și o metodă **idempotentă**.
+- Întoarce codurile de status potrivite cu `ResponseEntity`: `200`, `201`, `204`, `400`, `404`.
+
+## Exercițiul 1 – Programul de filme (20 min)
+
+**Scop:** Expunerea filmelor ca resursă REST și citirea lor cu `GET`.
+
+**Cerințe:**
+
+1. Porniți aplicația și deschideți [http://localhost:8080/api/movies](http://localhost:8080/api/movies). Ce status primiți?
+2. Adnotați clasa `MovieRestController` cu `@RestController` și `@RequestMapping("/api/movies")` (TODO 1.1).
+3. Adnotați `getMovies` cu `@GetMapping` și returnați toate filmele (TODO 1.2). Reporniți și reîncărcați pagina.
+4. Adnotați `getMovie` cu `@GetMapping("/{id}")` și parametrul cu `@PathVariable` (TODO 1.3). Testați `/api/movies/1`.
+5. Adăugați filtrarea după gen cu `@RequestParam(required = false)` (TODO 1.4). Testați `/api/movies?genre=Sci-Fi`.
+6. Deschideți `/api/movies/99`. Ce status primiți? Este corect?
+
+**Concepte:** Resursă, URI, Reprezentare, JSON, `@RestController`, `@RequestMapping`, `@GetMapping`, `@PathVariable`, `@RequestParam`.
+
+## Exercițiul 2 – Administrarea filmelor (25 min)
+
+**Scop:** Implementarea operațiilor CRUD cu metodele HTTP potrivite.
+
+**Cerințe:**
+
+1. Adnotați `createMovie` cu `@PostMapping` și parametrul cu `@RequestBody` (TODO 2.1).
+2. Adnotați `updateMovie` cu `@PutMapping("/{id}")`, `@PathVariable` și `@RequestBody` (TODO 2.2).
+3. Adnotați `deleteMovie` cu `@DeleteMapping("/{id}")` și `@PathVariable` (TODO 2.3).
+4. Reporniți aplicația și rulați din `requests.http` cererile de la exercițiul 2. După fiecare cerere, verificați lista cu `GET /api/movies`.
+5. Rulați cererea **POST** de două ori. Apoi rulați cererea **PUT** de două ori. Care dintre ele schimbă rezultatul la a doua rulare?
+6. Uitați-vă la statusul primit după POST și după DELETE. Spune ceva despre ce s-a întâmplat?
+
+**Concepte:** CRUD, `POST`, `PUT`, `DELETE`, `@RequestBody`, Safe, Idempotent.
+
+## Exercițiul 3 – Coduri de status (20 min)
+
+**Scop:** Întoarcerea codului de status potrivit pentru fiecare situație, cu `ResponseEntity`.
+
+**Cerințe:**
+
+1. `getMovie`: întoarceți `404 Not Found` dacă filmul nu există și `200 OK` altfel (TODO 3.1).
+2. `createMovie`: întoarceți `400 Bad Request` pentru un film fără titlu sau cu prețul `<= 0`, altfel `201 Created` cu headerul `Location` (TODO 3.2).
+3. `updateMovie`: întoarceți `404 Not Found` dacă filmul nu există (TODO 3.3).
+4. `deleteMovie`: întoarceți `204 No Content` după ștergere și `404 Not Found` dacă filmul nu există (TODO 3.4).
+5. Reporniți aplicația și rulați cererile de la exercițiul 3 din `requests.http`. Verificați statusul fiecărui răspuns.
+6. **Bonus:** Rulați cererile `OPTIONS` și `HEAD`. Ce conține headerul `Allow`? Are răspunsul la `HEAD` un body?
+
+**Concepte:** `ResponseEntity`, `200 OK`, `201 Created`, `204 No Content`, `400 Bad Request`, `404 Not Found`, headerul `Location`.
+
+## Observații
+
+- Codul de completat este marcat cu `TODO x.y` (exercițiul `x`, pasul `y`). Exercițiul 3 modifică metodele scrise la exercițiile 1 și 2.
+- Fișierul `requests.http` conține toate cererile laboratorului, în ordinea exercițiilor.
+- Dacă portul 8080 este ocupat, decomentați `server.port=8081` în `application.properties` și schimbați `@baseUrl` în `requests.http`.
+- Nu este necesară o bază de date: filmele sunt ținute în memorie, în `MovieService`.
