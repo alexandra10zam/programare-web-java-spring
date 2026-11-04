@@ -1,15 +1,24 @@
 package ro.example.lab4.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ro.example.lab4.model.Movie;
 import ro.example.lab4.service.MovieService;
 
 import java.net.URI;
 import java.util.List;
 
-// TODO 1.1: Adnotati clasa cu @RestController si @RequestMapping("/api/movies").
-//           Toate metodele de mai jos vor avea URI-ul de baza /api/movies.
+// @RestController = @Controller + @ResponseBody: ce intoarcem devine JSON, nu numele unui template.
+@RestController
+@RequestMapping("/api/movies")
 public class MovieRestController {
 
     private final MovieService movieService;
@@ -20,45 +29,53 @@ public class MovieRestController {
 
     // ===== Exercitiul 1 - Resurse si GET =====
 
-    // TODO 1.2: Adnotati metoda cu @GetMapping si returnati toate filmele (movieService.findAll()).
-    // TODO 1.4: Adaugati parametrul @RequestParam(required = false) String genre.
-    //           Daca genre nu este null, returnati movieService.findByGenre(genre).
-    public List<Movie> getMovies() {
-        return List.of();
+    // GET /api/movies si GET /api/movies?genre=Sci-Fi
+    @GetMapping
+    public List<Movie> getMovies(@RequestParam(required = false) String genre) {
+        if (genre != null) {
+            return movieService.findByGenre(genre);
+        }
+        return movieService.findAll();
     }
 
-    // TODO 1.3: Adnotati metoda cu @GetMapping("/{id}") si parametrul id cu @PathVariable.
-    //           Returnati movieService.findById(id).
-    // TODO 3.1: Schimbati tipul returnat in ResponseEntity<Movie>.
-    //           Filmul nu exista -> ResponseEntity.notFound().build()   (404)
-    //           Filmul exista    -> ResponseEntity.ok(movie)            (200)
-    public Movie getMovie(Long id) {
-        return null;
+    // GET /api/movies/1 -> 200 OK, GET /api/movies/99 -> 404 Not Found (Exercitiul 3)
+    @GetMapping("/{id}")
+    public ResponseEntity<Movie> getMovie(@PathVariable Long id) {
+        Movie movie = movieService.findById(id);
+        if (movie == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(movie);
     }
 
     // ===== Exercitiul 2 - CRUD =====
 
-    // TODO 2.1: Adnotati metoda cu @PostMapping si parametrul movie cu @RequestBody.
-    //           Salvati filmul cu movieService.add(movie) si returnati filmul salvat.
-    // TODO 3.2: Schimbati tipul returnat in ResponseEntity<Movie>.
-    //           Titlu lipsa/gol sau pret <= 0 -> ResponseEntity.badRequest().build()   (400)
-    //           Altfel -> ResponseEntity.created(URI.create("/api/movies/" + saved.getId())).body(saved)   (201)
-    public Movie createMovie(Movie movie) {
-        return null;
+    // POST /api/movies -> 201 Created + header Location, sau 400 Bad Request (Exercitiul 3)
+    @PostMapping
+    public ResponseEntity<Movie> createMovie(@RequestBody Movie movie) {
+        if (movie.getTitle() == null || movie.getTitle().isBlank() || movie.getPrice() <= 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        Movie saved = movieService.add(movie);
+        return ResponseEntity.created(URI.create("/api/movies/" + saved.getId())).body(saved);
     }
 
-    // TODO 2.2: Adnotati metoda cu @PutMapping("/{id}"), parametrul id cu @PathVariable
-    //           si parametrul movie cu @RequestBody. Returnati movieService.update(id, movie).
-    // TODO 3.3: Schimbati tipul returnat in ResponseEntity<Movie>: 404 daca filmul nu exista, altfel 200.
-    public Movie updateMovie(Long id, Movie movie) {
-        return null;
+    // PUT /api/movies/1 -> 200 OK, sau 404 Not Found (Exercitiul 3)
+    @PutMapping("/{id}")
+    public ResponseEntity<Movie> updateMovie(@PathVariable Long id, @RequestBody Movie movie) {
+        Movie updated = movieService.update(id, movie);
+        if (updated == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updated);
     }
 
-    // TODO 2.3: Adnotati metoda cu @DeleteMapping("/{id}") si parametrul id cu @PathVariable.
-    //           Stergeti filmul cu movieService.delete(id).
-    // TODO 3.4: Schimbati tipul returnat in ResponseEntity<Void>.
-    //           Filmul nu exista -> ResponseEntity.notFound().build()    (404)
-    //           Filmul a fost sters -> ResponseEntity.noContent().build() (204)
-    public void deleteMovie(Long id) {
+    // DELETE /api/movies/1 -> 204 No Content, sau 404 Not Found (Exercitiul 3)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMovie(@PathVariable Long id) {
+        if (!movieService.delete(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.noContent().build();
     }
 }
