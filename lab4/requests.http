@@ -1,0 +1,67 @@
+# Cererile pentru Laboratorul 4.
+# In IntelliJ: apasati sageata verde din stanga fiecarei cereri.
+# Raspunsul (status, headere, JSON) apare in fereastra de jos.
+@baseUrl = http://localhost:8080
+
+### Exercitiul 1 - Toate filmele
+GET {{baseUrl}}/api/movies
+
+### Exercitiul 1 - Un singur film
+GET {{baseUrl}}/api/movies/1
+
+### Exercitiul 1 - Un film care nu exista (ce status primim?)
+GET {{baseUrl}}/api/movies/99
+
+### Exercitiul 1 - Filtrare dupa gen
+GET {{baseUrl}}/api/movies?genre=Sci-Fi
+
+### Exercitiul 2 - Adauga un film (rulati de doua ori: ce se intampla?)
+POST {{baseUrl}}/api/movies
+Content-Type: application/json
+
+{
+  "title": "Inside Out 2",
+  "genre": "Animation",
+  "price": 25
+}
+
+### Exercitiul 2 - Modifica filmul 1 (rulati de doua ori: ce se intampla?)
+PUT {{baseUrl}}/api/movies/1
+Content-Type: application/json
+
+{
+  "title": "Dune: Part Two",
+  "genre": "Sci-Fi",
+  "price": 40
+}
+
+### Exercitiul 2 - Sterge filmul 3
+DELETE {{baseUrl}}/api/movies/3
+
+### Exercitiul 3 - Film invalid (fara titlu, pret 0)
+POST {{baseUrl}}/api/movies
+Content-Type: application/json
+
+{
+  "genre": "Drama",
+  "price": 0
+}
+
+### Exercitiul 3 - Modifica un film care nu exista
+PUT {{baseUrl}}/api/movies/99
+Content-Type: application/json
+
+{
+  "title": "Nu exista",
+  "genre": "Drama",
+  "price": 20
+}
+
+### Exercitiul 3 - Sterge un film care nu exista
+DELETE {{baseUrl}}/api/movies/99
+
+### Bonus - Ce metode accepta resursa? (uitati-va la headerul Allow)
+OPTIONS {{baseUrl}}/api/movies
+
+### Bonus - HEAD: aceleasi headere ca GET, fara body
+HEAD {{baseUrl}}/api/movies
