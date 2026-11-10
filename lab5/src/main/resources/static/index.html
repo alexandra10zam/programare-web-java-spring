@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Cinema FMI API</title>
+</head>
+<body>
+
+<h1>Cinema FMI - REST API (partea a doua)</h1>
+
+<p>Cererile GET pot fi deschise direct din browser:</p>
+<ul>
+    <li><a href="/api/movies">GET /api/movies</a></li>
+    <li><a href="/api/movies?page=0&amp;size=2">GET /api/movies?page=0&amp;size=2</a></li>
+    <li><a href="/api/movies/1">GET /api/movies/1</a></li>
+    <li><a href="/api/movies/1/screenings">GET /api/movies/1/screenings</a></li>
+    <li><a href="/api/movies/1/screenings/2">GET /api/movies/1/screenings/2</a></li>
+</ul>
+
+<p>Headerele raspunsului se vad in browser cu F12 &rarr; Network &rarr; cererea &rarr; Headers.</p>
+<p>Pentru PATCH, POST si DELETE folositi fisierul <code>requests.http</code> din IntelliJ.</p>
+
+</body>
+</html>
