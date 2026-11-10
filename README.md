@@ -34,6 +34,13 @@ programare-web-java-spring/
 │       ├── controller/
 │       ├── model/
 │       └── service/
+├── lab5/
+│   ├── pom.xml
+│   ├── requests.http
+│   └── src/main/java/ro/example/lab5/
+│       ├── controller/
+│       ├── model/
+│       └── service/
 ├── README.md
 └── .gitignore
 ```
@@ -42,6 +49,7 @@ programare-web-java-spring/
 - **Laboratorul 2:** Spring Core – Bean Scopes, Lazy Initialization & AOP
 - **Laboratorul 3:** Spring Boot & Spring MVC
 - **Laboratorul 4:** REST Web Services
+- **Laboratorul 5:** REST – Request Params, Request Body, Response & Headers
 
 ## Cerințe generale
 
@@ -63,7 +71,7 @@ Dependențele Spring sunt gestionate automat prin Maven, conform fișierului `po
    Alternativ, puteți descărca proiectul folosind **Code → Download ZIP** din GitHub.
 
 2. Deschideți IntelliJ IDEA.
-3. Selectați **File → Open** și alegeți folderul laboratorului dorit, de exemplu `lab2`, `lab3` sau `lab4`.
+3. Selectați **File → Open** și alegeți folderul laboratorului dorit, de exemplu `lab4` sau `lab5`.
 4. Verificați că proiectul utilizează **JDK 21**.
 5. Așteptați importarea proiectului Maven și descărcarea dependențelor din `pom.xml`-ul laboratorului.
 6. Alegeți exercițiul din lista de configurații de lângă butonul **Run** (sus, în dreapta): `Ex1 - Singleton vs Prototype` … `Ex5 - Tipurile de advice`, apoi apăsați **Run**.
@@ -326,3 +334,91 @@ La finalul laboratorului, studenții ar trebui să poată:
 - Fișierul `requests.http` conține toate cererile laboratorului, în ordinea exercițiilor.
 - Dacă portul 8080 este ocupat, decomentați `server.port=8081` în `application.properties` și schimbați `@baseUrl` în `requests.http`.
 - Nu este necesară o bază de date: filmele sunt ținute în memorie, în `MovieService`.
+
+---
+
+# Laboratorul 5 – REST: Request Params, Request Body, Response & Headers
+
+**Durată:** 70 de minute.
+
+Continuăm **API-ul REST Cinema FMI** din Laboratorul 4. Proiectul `lab5` pornește de unde s-a terminat `lab4`: GET, POST, PUT și DELETE pe `/api/movies` funcționează deja, cu codurile de status corecte. Azi adăugăm:
+
+- **proiecțiile** fiecărui film, ca subresursă: `/api/movies/{movieId}/screenings`;
+- **paginarea** listei de filme;
+- modificarea parțială cu **PATCH** și o **căutare** complexă, cu body;
+- **headere** în cerere și în răspuns: `X-Total-Count`, `X-Api-Key`, `ETag`, `If-Match`.
+
+Codul de completat este în `controller/MovieRestController.java`, `controller/ScreeningRestController.java` și într-o singură metodă din `service/MovieService.java`.
+
+## Pornirea aplicației
+
+1. Deschideți folderul `lab5` în IntelliJ IDEA (**File → Open → lab5**) și așteptați importarea proiectului Maven.
+2. Rulați configurația `Lab5 - Cinema FMI API` (sau clasa `Lab5Application`).
+3. În consolă trebuie să apară `Tomcat started on port 8080`. Dacă portul e ocupat, opriți aplicația din laboratorul trecut.
+4. Cererile **GET** se pot deschide din browser, pornind de la [http://localhost:8080](http://localhost:8080). Headerele răspunsului se văd cu **F12 → Network**.
+5. Pentru celelalte cereri, deschideți `requests.http` și apăsați săgeata verde din stânga fiecărei cereri.
+
+**Important:** După fiecare modificare în cod, reporniți aplicația. La repornire, datele revin la cele inițiale.
+
+## Obiective
+
+La finalul laboratorului, studenții ar trebui să poată:
+
+- Proiecta URI-uri pentru **subresurse**, cu mai multe `@PathVariable`.
+- Alege între **path param** (obligatoriu, identifică resursa) și **query param** (opțional: filtrare, paginare).
+- Folosi `@RequestParam` cu `defaultValue` pentru paginare.
+- Explica diferența dintre **PUT** (înlocuire completă) și **PATCH** (modificare parțială).
+- Folosi `@RequestBody` pentru o căutare complexă (`POST /search`).
+- Citi headere din cerere cu `@RequestHeader` și trimite headere în răspuns cu `ResponseEntity`.
+- Explica headerele standard `Content-Type`, `Accept`, `Location`, `ETag`, `If-Match` și ce sunt headerele custom.
+
+## Exercițiul 1 – Proiecțiile și paginarea (20 min)
+
+**Scop:** Lucrul cu parametri în cale (subresurse) și parametri în query (paginare).
+
+**Cerințe:**
+
+1. Porniți aplicația și rulați din `requests.http` prima cerere a exercițiului 1. Ce status primiți?
+2. Adnotați `ScreeningRestController` cu `@RestController` și `@RequestMapping("/api/movies/{movieId}/screenings")` (TODO 1.1).
+3. Implementați `getScreenings`: 404 dacă filmul nu există, altfel lista proiecțiilor (TODO 1.2).
+4. Implementați `getScreening`, cu două `@PathVariable` (TODO 1.3).
+5. Rulați cererile pentru `/api/movies/1/screenings/3` și `/api/movies/99/screenings`. Ce status primiți și de ce?
+6. În `MovieRestController.getMovies`, adăugați paginarea cu `page` și `size` (TODO 1.4). Testați `?page=0&size=2` și `?page=1&size=2`.
+
+**Concepte:** Path param, `@PathVariable`, Subresursă, Query param, `@RequestParam(defaultValue = ...)`, Paginare.
+
+## Exercițiul 2 – Modificări parțiale și căutare (20 min)
+
+**Scop:** Trimiterea datelor în body: PUT vs. PATCH și o căutare complexă.
+
+**Cerințe:**
+
+1. Rulați cererea **PUT** cu un singur câmp (`price`) pe filmul 1, apoi `GET /api/movies/1`. Ce s-a întâmplat cu titlul și genul?
+2. Rulați cererea **PATCH**. Ce status primiți?
+3. Adnotați `patchMovie` cu `@PatchMapping("/{id}")`, `@PathVariable` și `@RequestBody` (TODO 2.1).
+4. În `MovieService.patch`, modificați doar câmpurile care nu sunt `null` (TODO 2.2). De ce în `MoviePatch` prețul este `Double`, nu `double`?
+5. Adnotați `searchMovies` cu `@PostMapping("/search")` și `@RequestBody` (TODO 2.3). Rulați cererea de căutare.
+
+**Concepte:** `@RequestBody`, `PUT` vs. `PATCH`, `@PatchMapping`, Căutare complexă cu `POST /search`.
+
+## Exercițiul 3 – Headere (25 min)
+
+**Scop:** Citirea headerelor din cerere și trimiterea headerelor în răspuns.
+
+**Cerințe:**
+
+1. `getMovies`: întoarceți `ResponseEntity<List<Movie>>` cu headerul `X-Total-Count` (TODO 3.1). Verificați headerul în `requests.http` sau în browser, cu **F12 → Network**.
+2. `deleteMovie`: citiți headerul `X-Api-Key` cu `@RequestHeader` și întoarceți `403 Forbidden` dacă nu este `cinema-admin` (TODO 3.2). Rulați cele trei cereri DELETE.
+3. `getMovie`: trimiteți versiunea filmului în headerul `ETag` (TODO 3.3).
+4. `patchMovie`: citiți headerul `If-Match` și întoarceți `412 Precondition Failed` dacă versiunea nu mai este cea curentă (TODO 3.4).
+5. Rulați, în ordine, cererile pentru filmul 4: GET, primul PATCH, al doilea PATCH. Ce primește al doilea administrator și de ce?
+6. **Bonus:** Rulați cererile bonus. Ce statusuri primiți pentru `Accept: application/xml`, pentru `Content-Type: text/plain` și pentru `If-None-Match`?
+
+**Concepte:** `@RequestHeader`, `ResponseEntity` cu headere, Headere custom (`X-...`), `ETag`, `If-Match`, `Accept`, `Content-Type`, `403`, `412`.
+
+## Observații
+
+- Codul de completat este marcat cu `TODO x.y` (exercițiul `x`, pasul `y`). Exercițiul 3 modifică metode scrise la exercițiile 1 și 2.
+- Metodele din secțiunea „Din Laboratorul 4” sunt complete și nu trebuie modificate.
+- Fișierul `requests.http` conține toate cererile laboratorului, în ordinea exercițiilor.
+- Dacă portul 8080 este ocupat, decomentați `server.port=8081` în `application.properties` și schimbați `@baseUrl` în `requests.http`.

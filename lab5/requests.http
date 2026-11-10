@@ -1,0 +1,100 @@
+# Cererile pentru Laboratorul 5.
+# In IntelliJ: apasati sageata verde din stanga fiecarei cereri.
+# Raspunsul (status, headere, body) apare in fereastra de jos.
+# Dupa fiecare repornire a aplicatiei, datele revin la cele initiale.
+@baseUrl = http://localhost:8080
+
+### Exercitiul 1 - Proiectiile filmului 1
+GET {{baseUrl}}/api/movies/1/screenings
+
+### Exercitiul 1 - O proiectie a filmului 1
+GET {{baseUrl}}/api/movies/1/screenings/2
+
+### Exercitiul 1 - Proiectia 3 exista, dar apartine filmului 2 (ce status primim?)
+GET {{baseUrl}}/api/movies/1/screenings/3
+
+### Exercitiul 1 - Proiectiile unui film care nu exista: lista goala sau 404?
+GET {{baseUrl}}/api/movies/99/screenings
+
+### Exercitiul 1 - Prima pagina, cate 2 filme pe pagina
+GET {{baseUrl}}/api/movies?page=0&size=2
+
+### Exercitiul 1 - A doua pagina
+GET {{baseUrl}}/api/movies?page=1&size=2
+
+### Exercitiul 1 - Filtrare + paginare
+GET {{baseUrl}}/api/movies?genre=Sci-Fi&page=0&size=1
+
+### Exercitiul 2 - PUT cu un singur camp (ce se intampla cu titlul?)
+PUT {{baseUrl}}/api/movies/1
+Content-Type: application/json
+
+{
+  "price": 45
+}
+
+### Exercitiul 2 - PATCH: modificam doar pretul
+PATCH {{baseUrl}}/api/movies/2
+Content-Type: application/json
+
+{
+  "price": 45
+}
+
+### Exercitiul 2 - Cautare complexa: Sci-Fi sau Drama, cel mult 33 RON
+POST {{baseUrl}}/api/movies/search
+Content-Type: application/json
+
+{
+  "genres": ["Sci-Fi", "Drama"],
+  "maxPrice": 33
+}
+
+### Exercitiul 3 - Cate filme sunt in total? (headerul X-Total-Count)
+GET {{baseUrl}}/api/movies?page=0&size=2
+
+### Exercitiul 3 - Stergere fara cheie
+DELETE {{baseUrl}}/api/movies/3
+
+### Exercitiul 3 - Stergere cu cheie gresita
+DELETE {{baseUrl}}/api/movies/3
+X-Api-Key: student
+
+### Exercitiul 3 - Stergere cu cheia corecta
+DELETE {{baseUrl}}/api/movies/3
+X-Api-Key: cinema-admin
+
+### Exercitiul 3 - Citim filmul 4 si ne uitam la headerul ETag
+GET {{baseUrl}}/api/movies/4
+
+### Exercitiul 3 - Primul administrator modifica filmul 4, avand versiunea 1
+PATCH {{baseUrl}}/api/movies/4
+Content-Type: application/json
+If-Match: "1"
+
+{
+  "price": 30
+}
+
+### Exercitiul 3 - Al doilea administrator modifica filmul 4, avand tot versiunea 1
+PATCH {{baseUrl}}/api/movies/4
+Content-Type: application/json
+If-Match: "1"
+
+{
+  "price": 20
+}
+
+### Bonus - Cerem XML in loc de JSON (headerul Accept)
+GET {{baseUrl}}/api/movies/1
+Accept: application/xml
+
+### Bonus - Trimitem text in loc de JSON (headerul Content-Type)
+PATCH {{baseUrl}}/api/movies/1
+Content-Type: text/plain
+
+price=45
+
+### Bonus - Avem deja versiunea 1 a filmului 1. S-a schimbat ceva?
+GET {{baseUrl}}/api/movies/1
+If-None-Match: "1"
