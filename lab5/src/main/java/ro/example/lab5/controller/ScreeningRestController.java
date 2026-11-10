@@ -1,15 +1,19 @@
 package ro.example.lab5.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ro.example.lab5.model.Screening;
 import ro.example.lab5.service.MovieService;
 import ro.example.lab5.service.ScreeningService;
 
 import java.util.List;
 
-// TODO 1.1: Proiectiile sunt o subresursa a filmului. Adnotati clasa cu
-//   @RestController si @RequestMapping("/api/movies/{movieId}/screenings").
+// Subresursa: proiectiile unui film. movieId face parte din URI-ul de baza.
+@RestController
+@RequestMapping("/api/movies/{movieId}/screenings")
 public class ScreeningRestController {
 
     private final MovieService movieService;
@@ -20,16 +24,23 @@ public class ScreeningRestController {
         this.screeningService = screeningService;
     }
 
-    // TODO 1.2: Adnotati metoda cu @GetMapping si parametrul movieId cu @PathVariable.
-    //   Filmul nu exista (movieService.findById(movieId) == null) -> 404 Not Found.
-    //   Altfel -> 200 OK cu screeningService.findByMovie(movieId).
-    public ResponseEntity<List<Screening>> getScreenings(Long movieId) {
-        return null;
+    // GET /api/movies/1/screenings
+    @GetMapping
+    public ResponseEntity<List<Screening>> getScreenings(@PathVariable Long movieId) {
+        // Daca filmul nu exista, nici proiectiile lui nu exista: 404, nu lista goala.
+        if (movieService.findById(movieId) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(screeningService.findByMovie(movieId));
     }
 
-    // TODO 1.3: Adnotati metoda cu @GetMapping("/{screeningId}") si AMBII parametri cu @PathVariable.
-    //   screeningService.findById(movieId, screeningId): null -> 404 Not Found, altfel 200 OK.
-    public ResponseEntity<Screening> getScreening(Long movieId, Long screeningId) {
-        return null;
+    // GET /api/movies/1/screenings/2
+    @GetMapping("/{screeningId}")
+    public ResponseEntity<Screening> getScreening(@PathVariable Long movieId, @PathVariable Long screeningId) {
+        Screening screening = screeningService.findById(movieId, screeningId);
+        if (screening == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(screening);
     }
 }

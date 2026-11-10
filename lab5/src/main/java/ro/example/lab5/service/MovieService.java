@@ -82,12 +82,15 @@ public class MovieService {
         if (movie == null) {
             return null;
         }
-        // TODO 2.2: Modificati DOAR campurile trimise de client (cele care nu sunt null).
-        //   Exemplu pentru titlu:
-        //   if (patch.getTitle() != null) {
-        //       movie.setTitle(patch.getTitle());
-        //   }
-        //   Faceti la fel pentru genre si price.
+        if (patch.getTitle() != null) {
+            movie.setTitle(patch.getTitle());
+        }
+        if (patch.getGenre() != null) {
+            movie.setGenre(patch.getGenre());
+        }
+        if (patch.getPrice() != null) {
+            movie.setPrice(patch.getPrice());
+        }
         movie.setVersion(movie.getVersion() + 1);
         return movie;
     }
