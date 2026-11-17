@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Lab6 - Cinema FMI API" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="ro.example.lab6.Lab6Application" />
+    <module name="lab6" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
