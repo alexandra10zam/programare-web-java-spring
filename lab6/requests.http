@@ -1,0 +1,109 @@
+# Cererile pentru Laboratorul 6.
+# In IntelliJ: apasati sageata verde din stanga fiecarei cereri.
+# Dupa fiecare repornire a aplicatiei, datele revin la cele initiale.
+@baseUrl = http://localhost:8080
+
+### Exercitiul 1 - Film valid
+POST {{baseUrl}}/api/movies
+Content-Type: application/json
+
+{
+  "title": "Wicked",
+  "genre": "Musical",
+  "price": 30
+}
+
+### Exercitiul 1 - Film invalid: titlu gol, fara gen, pret negativ
+POST {{baseUrl}}/api/movies
+Content-Type: application/json
+
+{
+  "title": "",
+  "price": -5
+}
+
+### Exercitiul 1 - Titlu prea lung (peste 40 de caractere)
+POST {{baseUrl}}/api/movies
+Content-Type: application/json
+
+{
+  "title": "Un titlu de film mult prea lung pentru cinematograful nostru",
+  "genre": "Drama",
+  "price": 30
+}
+
+### Exercitiul 1 - PUT doar cu pretul (in Laboratorul 5 stergea titlul!)
+PUT {{baseUrl}}/api/movies/1
+Content-Type: application/json
+
+{
+  "price": 45
+}
+
+### Exercitiul 2 - Rezervare valida
+POST {{baseUrl}}/api/movies/1/screenings/1/bookings
+Content-Type: application/json
+
+{
+  "clientName": "Ana Popescu",
+  "phone": "0722123456",
+  "seats": 2,
+  "date": "2027-01-15"
+}
+
+### Exercitiul 2 - Rezervare invalida: nume scurt, telefon gresit, prea multe locuri, data in trecut
+POST {{baseUrl}}/api/movies/1/screenings/1/bookings
+Content-Type: application/json
+
+{
+  "clientName": "Al",
+  "phone": "123",
+  "seats": 15,
+  "date": "2025-01-01"
+}
+
+### Exercitiul 2 - Rezervare fara telefon (ce face @Pattern cu null?)
+POST {{baseUrl}}/api/movies/1/screenings/1/bookings
+Content-Type: application/json
+
+{
+  "clientName": "Ion Ionescu",
+  "seats": 1,
+  "date": "2027-01-15"
+}
+
+### Exercitiul 2 - Proiectia 3 nu mai are locuri (ce status primim?)
+POST {{baseUrl}}/api/movies/2/screenings/3/bookings
+Content-Type: application/json
+
+{
+  "clientName": "Maria Ionescu",
+  "phone": "0733111222",
+  "seats": 5,
+  "date": "2027-01-15"
+}
+
+### Exercitiul 2 - Proiectie care nu exista (ce status primim?)
+POST {{baseUrl}}/api/movies/1/screenings/99/bookings
+Content-Type: application/json
+
+{
+  "clientName": "Maria Ionescu",
+  "phone": "0733111222",
+  "seats": 1,
+  "date": "2027-01-15"
+}
+
+### Exercitiul 3 - Film care nu exista
+GET {{baseUrl}}/api/movies/99
+
+### Exercitiul 3 - Proiectiile unui film care nu exista
+GET {{baseUrl}}/api/movies/99/screenings
+
+### Bonus - JSON invalid (lipseste o ghilimea si o acolada)
+POST {{baseUrl}}/api/movies
+Content-Type: application/json
+
+{
+  "title": "Dune,
+  "price": 30

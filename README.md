@@ -41,6 +41,14 @@ programare-web-java-spring/
 │       ├── controller/
 │       ├── model/
 │       └── service/
+├── lab6/
+│   ├── pom.xml
+│   ├── requests.http
+│   └── src/main/java/ro/example/lab6/
+│       ├── controller/
+│       ├── exception/
+│       ├── model/
+│       └── service/
 ├── README.md
 └── .gitignore
 ```
@@ -51,6 +59,7 @@ programare-web-java-spring/
 - **Lab 3:** Spring Boot and Spring MVC
 - **Lab 4:** REST Web Services
 - **Lab 5:** REST: Request Params, Request Body, Response and Headers
+- **Lab 6:** REST: Input Validation, Exception Handling and Error Responses
 
 ## Requirements
 
@@ -72,7 +81,7 @@ Spring dependencies are managed automatically by Maven through each lab's `pom.x
    Alternatively, download it from GitHub with **Code → Download ZIP**.
 
 2. Open IntelliJ IDEA.
-3. Select **File → Open** and choose the folder of the lab you want, for example `lab4` or `lab5`.
+3. Select **File → Open** and choose the folder of the lab you want, for example `lab5` or `lab6`.
 4. Make sure the project uses **JDK 21**.
 5. Wait for the Maven import to finish and for the dependencies in the lab's `pom.xml` to download.
 6. Pick an exercise from the run configurations next to the **Run** button (top right), from `Ex1 - Singleton vs Prototype` to `Ex5 - Tipurile de advice`, then press **Run**.
@@ -422,4 +431,102 @@ By the end of the lab, students should be able to:
 - The code to complete is marked with `TODO x.y` (exercise `x`, step `y`). Exercise 3 changes methods written in exercises 1 and 2.
 - The methods in the section marked "Din Laboratorul 4" (from Lab 4) are complete and do not need to be changed.
 - The `requests.http` file contains all of the lab's requests, in exercise order.
+- If port 8080 is taken, uncomment `server.port=8081` in `application.properties` and change `@baseUrl` in `requests.http`.
+
+---
+
+# Lab 6: REST (Input Validation, Exception Handling and Error Responses)
+
+**Duration:** 70 minutes.
+
+We continue the **Cinema FMI REST API** from Lab 5. Everything from Lab 5 already works. Today we make the API handle **bad input** and **errors** properly:
+
+- **input validation** with Bean Validation (JSR 303/380): `@NotBlank`, `@Size`, `@Min`, `@Max`, `@Pattern`, `@Future`, `@Valid`;
+- a new endpoint for **bookings**: `POST /api/movies/{movieId}/screenings/{screeningId}/bookings`;
+- **exception handling** in one place for the whole application, with `@RestControllerAdvice` and `@ExceptionHandler`;
+- clear **error responses**: the correct status code and a body with `timestamp`, `status`, `error`, `message` and `path`.
+
+The code to complete is in `model/Movie.java`, `model/BookingRequest.java`, `controller/MovieRestController.java`, `controller/BookingRestController.java` and `exception/GlobalExceptionHandler.java`.
+
+## Running the application
+
+1. Open the `lab6` folder in IntelliJ IDEA (**File → Open → lab6**) and wait for the Maven import. The `pom.xml` now also contains `spring-boot-starter-validation`.
+2. Run the `Lab6 - Cinema FMI API` configuration (or the `Lab6Application` class).
+3. The console should show `Tomcat started on port 8080`. If the port is taken, stop the application from the previous lab.
+4. Open `requests.http` and click the green arrow to the left of each request.
+
+**Important:** after every code change, restart the application. A restart resets the data to its initial state.
+
+## Learning objectives
+
+By the end of the lab, students should be able to:
+
+- Validate request bodies with Bean Validation annotations and `@Valid`, instead of hand-written `if` checks.
+- Choose the right constraint: `@NotNull`, `@NotBlank`, `@Size`, `@Min`, `@Max`, `@Pattern`, `@Future`, `@Positive`.
+- Explain the difference between **validation** (the shape of the data) and **business rules** (rules that depend on the application's state).
+- Throw custom exceptions from the service layer instead of returning `null`.
+- Handle exceptions for the whole application with `@RestControllerAdvice` and `@ExceptionHandler`.
+- Return the correct status code for each error: `400`, `404`, `409`, and explain why a client error must not be a `500`.
+- Build a consistent error response body with `timestamp`, `status`, `error`, `message` and `path`.
+
+## Exercise 1: Validating movies (15 min)
+
+**Goal:** replace hand-written checks with Bean Validation.
+
+**Tasks:**
+
+1. Run the exercise 1 requests from `requests.http`. Which ones are accepted even though the data is wrong?
+2. In `Movie`, add the validation constraints on `title`, `genre` and `price` (TODO 1.1). Restart and run the requests again. Did anything change?
+3. In `MovieRestController`, add `@Valid` to `createMovie` and `updateMovie` and delete the hand-written `if` (TODO 1.2).
+4. Restart and run the requests again. What status do you get now? Does the response body tell the client which field is wrong?
+
+**Concepts:** Bean Validation, `@NotBlank`, `@Size`, `@Positive`, `@Valid`, `400 Bad Request`.
+
+## Exercise 2: Bookings (15 min)
+
+**Goal:** validate a new request body and see what happens when a business rule fails.
+
+**Tasks:**
+
+1. In `BookingRequest`, add the validation constraints described in TODO 2.1.
+2. In `BookingRestController`, map the class and the `book` method, with two `@PathVariable` parameters and `@Valid @RequestBody` (TODO 2.2).
+3. Restart and run the exercise 2 requests. Which constraints fail for the invalid booking?
+4. Run the booking without a phone number. Why does `@Pattern` alone not catch it?
+5. Run the booking for screening 3 (no seats left) and for screening 99. What status do you get? Whose mistake is it: the client's or the server's?
+
+**Concepts:** `@Min`, `@Max`, `@Pattern`, `@NotNull`, `@Future`, validation vs. business rules, `500 Internal Server Error`.
+
+## Exercise 3: Exception handling (20 min)
+
+**Goal:** turn exceptions into the correct status codes, in one place for the whole application.
+
+**Tasks:**
+
+1. Annotate `GlobalExceptionHandler` with `@RestControllerAdvice` (TODO 3.1).
+2. Handle `ResourceNotFoundException` with `@ExceptionHandler` and return `404 Not Found` with the exception's message (TODO 3.2).
+3. Handle `NotEnoughSeatsException` and return `409 Conflict` (TODO 3.3).
+4. In `MovieRestController.getMovie`, replace `findById` and the `if` with `movieService.getById(id)` (TODO 3.4).
+5. Restart and run the exercise 2 and exercise 3 requests again. Compare the statuses with the ones from exercise 2.
+
+**Concepts:** custom exceptions, `@RestControllerAdvice`, `@ExceptionHandler`, `404 Not Found`, `409 Conflict`, cross-cutting concern.
+
+## Exercise 4: Error responses (15 min)
+
+**Goal:** return the same, helpful error body for every error.
+
+**Tasks:**
+
+1. Change the two handlers from exercise 3 to return `ResponseEntity<ErrorResponse>`, using the request's path (TODO 4.1).
+2. Handle `MethodArgumentNotValidException` and return `400 Bad Request` with the message of every invalid field (TODO 4.2).
+3. Restart and run the invalid requests from exercises 1 and 2. Does the client now know what to fix?
+4. **Bonus:** handle `HttpMessageNotReadableException` (TODO 4.3) and run the bonus request with invalid JSON.
+
+**Concepts:** error response body, `MethodArgumentNotValidException`, `HttpServletRequest`, consistent error format.
+
+## Notes
+
+- The code to complete is marked with `TODO x.y` (exercise `x`, step `y`). Exercises 3 and 4 change the same handler methods.
+- The methods in the section marked "Din Laboratorul 5" (from Lab 5) are complete and do not need to be changed.
+- The `requests.http` file contains all of the lab's requests, in exercise order.
+- Spring Boot's default error body hides the exception's message. To see it, uncomment `server.error.include-message=always` in `application.properties` (for demonstration only).
 - If port 8080 is taken, uncomment `server.port=8081` in `application.properties` and change `@baseUrl` in `requests.http`.
