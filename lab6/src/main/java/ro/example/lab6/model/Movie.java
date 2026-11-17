@@ -10,15 +10,14 @@ public class Movie {
 
     private Long id;
 
-    // TODO 1.1: Titlul este obligatoriu si are cel mult 40 de caractere:
-    //   @NotBlank(message = "Titlul este obligatoriu")
-    //   @Size(max = 40, message = "Titlul poate avea cel mult 40 de caractere")
+    @NotBlank(message = "Titlul este obligatoriu")
+    @Size(max = 40, message = "Titlul poate avea cel mult 40 de caractere")
     private String title;
 
-    // TODO 1.1: Genul este obligatoriu: @NotBlank(message = "Genul este obligatoriu")
+    @NotBlank(message = "Genul este obligatoriu")
     private String genre;
 
-    // TODO 1.1: Pretul trebuie sa fie pozitiv: @Positive(message = "Pretul trebuie sa fie pozitiv")
+    @Positive(message = "Pretul trebuie sa fie pozitiv")
     private double price;
 
     private int version = 1;

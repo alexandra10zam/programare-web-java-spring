@@ -13,19 +13,21 @@ import java.time.LocalDate;
 // Ce trimite clientul cand rezerva locuri (body-ul cererii POST .../bookings).
 public class BookingRequest {
 
-    // TODO 2.1: Adaugati constrangerile de validare (vezi tabelul din curs):
-    //   clientName: obligatoriu, intre 3 si 50 de caractere -> @NotBlank, @Size(min = 3, max = 50)
-    //   phone: obligatoriu, de forma 07xxxxxxxx -> @NotBlank, @Pattern(regexp = "07[0-9]{8}")
-    //   seats: intre 1 si 10 -> @Min(1), @Max(10)
-    //   date: obligatorie si in viitor -> @NotNull, @Future
-    //   Dati fiecarei constrangeri un mesaj clar, de exemplu:
-    //   @NotBlank(message = "Numele este obligatoriu")
+    @NotBlank(message = "Numele este obligatoriu")
+    @Size(min = 3, max = 50, message = "Numele trebuie sa aiba intre 3 si 50 de caractere")
     private String clientName;
 
+    // @Pattern nu verifica valorile null, de aceea avem nevoie si de @NotBlank.
+    @NotBlank(message = "Telefonul este obligatoriu")
+    @Pattern(regexp = "07[0-9]{8}", message = "Telefonul trebuie sa aiba forma 07xxxxxxxx")
     private String phone;
 
+    @Min(value = 1, message = "Rezervati cel putin un loc")
+    @Max(value = 10, message = "Puteti rezerva cel mult 10 locuri")
     private int seats;
 
+    @NotNull(message = "Data este obligatorie")
+    @Future(message = "Data trebuie sa fie in viitor")
     private LocalDate date;
 
     public String getClientName() {

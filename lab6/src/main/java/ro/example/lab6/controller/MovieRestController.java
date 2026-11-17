@@ -26,20 +26,16 @@ public class MovieRestController {
 
     // ===== Exercitiul 1 - Validare =====
 
-    // TODO 1.2: Adaugati @Valid inaintea lui @RequestBody, apoi STERGETI if-ul de mai jos:
-    //   validarea o face acum Spring, pe baza adnotarilor din Movie.
+    // @Valid: Spring verifica adnotarile din Movie. Daca una nu e respectata,
+    // metoda nu mai ruleaza si se arunca MethodArgumentNotValidException (400).
     @PostMapping
-    public ResponseEntity<Movie> createMovie(@RequestBody Movie movie) {
-        if (movie.getTitle() == null || movie.getTitle().isBlank() || movie.getPrice() <= 0) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Movie> createMovie(@Valid @RequestBody Movie movie) {
         Movie saved = movieService.add(movie);
         return ResponseEntity.created(URI.create("/api/movies/" + saved.getId())).body(saved);
     }
 
-    // TODO 1.2: Adaugati @Valid si aici. In Laboratorul 5, un PUT doar cu pretul stergea titlul.
     @PutMapping("/{id}")
-    public ResponseEntity<Movie> updateMovie(@PathVariable Long id, @RequestBody Movie movie) {
+    public ResponseEntity<Movie> updateMovie(@PathVariable Long id, @Valid @RequestBody Movie movie) {
         Movie updated = movieService.update(id, movie);
         if (updated == null) {
             return ResponseEntity.notFound().build();
@@ -49,14 +45,10 @@ public class MovieRestController {
 
     // ===== Exercitiul 3 - Exceptii in loc de if-uri =====
 
-    // TODO 3.4: Inlocuiti findById si if-ul cu: Movie movie = movieService.getById(id);
-    //   getById arunca ResourceNotFoundException, iar GlobalExceptionHandler o transforma in 404.
+    // Fara if: daca filmul nu exista, getById arunca ResourceNotFoundException -> 404 (GlobalExceptionHandler).
     @GetMapping("/{id}")
     public ResponseEntity<Movie> getMovie(@PathVariable Long id) {
-        Movie movie = movieService.findById(id);
-        if (movie == null) {
-            return ResponseEntity.notFound().build();
-        }
+        Movie movie = movieService.getById(id);
         return ResponseEntity.ok()
                 .eTag(String.valueOf(movie.getVersion()))
                 .body(movie);

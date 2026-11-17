@@ -11,39 +11,38 @@ import ro.example.lab6.model.ErrorResponse;
 
 import java.util.stream.Collectors;
 
-// TODO 3.1: Adnotati clasa cu @RestControllerAdvice.
-//   Metodele din aceasta clasa vor trata exceptiile aruncate de ORICE controller.
+// Un singur loc care trateaza erorile pentru TOATE controller-ele: cross-cutting concern, ca un aspect.
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // TODO 3.2: Adnotati metoda cu @ExceptionHandler(ResourceNotFoundException.class) si returnati:
-    //   ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage())
-    // TODO 4.1: Schimbati tipul returnat in ResponseEntity<ErrorResponse> si adaugati parametrul
-    //   HttpServletRequest request. Body-ul devine:
-    //   new ErrorResponse(404, "Not Found", ex.getMessage(), request.getRequestURI())
-    public ResponseEntity<String> handleNotFound(ResourceNotFoundException ex) {
-        return null;
+    // 404: filmul sau proiectia nu exista.
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
+        ErrorResponse body = new ErrorResponse(404, "Not Found", ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
-    // TODO 3.3: Adnotati metoda cu @ExceptionHandler(NotEnoughSeatsException.class)
-    //   si returnati 409 Conflict cu mesajul exceptiei (HttpStatus.CONFLICT).
-    // TODO 4.1: La fel ca mai sus: ResponseEntity<ErrorResponse>, cu 409 si "Conflict".
-    public ResponseEntity<String> handleNotEnoughSeats(NotEnoughSeatsException ex) {
-        return null;
+    // 409: cererea e corecta ca forma, dar intra in conflict cu starea resursei (nu mai sunt locuri).
+    @ExceptionHandler(NotEnoughSeatsException.class)
+    public ResponseEntity<ErrorResponse> handleNotEnoughSeats(NotEnoughSeatsException ex, HttpServletRequest request) {
+        ErrorResponse body = new ErrorResponse(409, "Conflict", ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 
-    // TODO 4.2: Adnotati metoda cu @ExceptionHandler(MethodArgumentNotValidException.class).
-    //   Construiti mesajul din erorile fiecarui camp:
-    //   String message = ex.getBindingResult().getFieldErrors().stream()
-    //           .map(error -> error.getField() + ": " + error.getDefaultMessage())
-    //           .collect(Collectors.joining("; "));
-    //   si returnati 400 Bad Request cu new ErrorResponse(400, "Bad Request", message, request.getRequestURI())
+    // 400: un camp din body nu respecta constrangerile de validare (@Valid a esuat).
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        return null;
+        String message = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining("; "));
+        ErrorResponse body = new ErrorResponse(400, "Bad Request", message, request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
-    // TODO 4.3 (Bonus): Adnotati metoda cu @ExceptionHandler(HttpMessageNotReadableException.class)
-    //   si returnati 400 Bad Request cu mesajul "Body-ul cererii nu este un JSON valid".
+    // 400: body-ul nu este un JSON valid (Bonus).
+    @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleInvalidJson(HttpMessageNotReadableException ex, HttpServletRequest request) {
-        return null;
+        ErrorResponse body = new ErrorResponse(400, "Bad Request", "Body-ul cererii nu este un JSON valid", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 }
