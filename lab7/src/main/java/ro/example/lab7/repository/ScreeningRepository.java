@@ -17,15 +17,21 @@ public class ScreeningRepository {
 
     // ===== Exercitiul 4 - JOIN =====
 
-    // TODO 4.1: Scrieti un query cu JOIN intre screenings (s) si movies (m), ca fiecare proiectie
-    //   sa aiba si titlul filmului. Selectati coloanele:
-    //   s.id, s.movie_id, m.title, s.start_time, s.room, s.seats_left
-    //   FROM screenings s JOIN movies m ON m.id = s.movie_id
-    //   WHERE s.movie_id = ? ORDER BY s.start_time
-    // TODO 4.2: Completati RowMapper-ul de mai jos cu coloanele din query
-    //   (new Screening(resultSet.getLong("id"), resultSet.getLong("movie_id"), resultSet.getString("title"), ...)).
+    // JOIN: fiecare rand din screenings primeste si titlul filmului din movies.
     public List<Screening> findByMovie(Long movieId) {
-        String sql = "";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> null, movieId);
+        String sql = """
+                SELECT s.id, s.movie_id, m.title, s.start_time, s.room, s.seats_left
+                FROM screenings s
+                JOIN movies m ON m.id = s.movie_id
+                WHERE s.movie_id = ?
+                ORDER BY s.start_time
+                """;
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Screening(
+                resultSet.getLong("id"),
+                resultSet.getLong("movie_id"),
+                resultSet.getString("title"),
+                resultSet.getString("start_time"),
+                resultSet.getString("room"),
+                resultSet.getInt("seats_left")), movieId);
     }
 }

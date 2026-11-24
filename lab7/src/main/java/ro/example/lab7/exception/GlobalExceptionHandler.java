@@ -30,11 +30,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
-    // TODO 4.3: Adnotati metoda cu @ExceptionHandler(DataIntegrityViolationException.class).
-    //   Spring arunca aceasta exceptie cand PostgreSQL refuza o operatie, de exemplu
-    //   stergerea unui film care are proiectii (cheie straina).
-    //   Returnati 409 Conflict cu mesajul "Operatia incalca o regula a bazei de date: filmul are proiectii".
+    // 409: PostgreSQL a refuzat operatia (de exemplu, cheia straina din screenings).
+    @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException ex, HttpServletRequest request) {
-        return null;
+        ErrorResponse body = new ErrorResponse(409, "Conflict",
+                "Operatia incalca o regula a bazei de date: filmul are proiectii", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 }
