@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Lab7 - Cinema FMI API" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="ro.example.lab7.Lab7Application" />
+    <module name="lab7" />
+    <envs>
+      <env name="DB_PASSWORD" value="parola_voastra" />
+    </envs>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

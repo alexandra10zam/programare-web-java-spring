@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Lab7 - JDBC demo" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="ro.example.lab7.Lab7Application" />
+    <module name="lab7" />
+    <option name="PROGRAM_PARAMETERS" value="--spring.profiles.active=jdbc-demo" />
+    <envs>
+      <env name="DB_PASSWORD" value="parola_voastra" />
+    </envs>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
