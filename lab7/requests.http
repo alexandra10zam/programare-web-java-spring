@@ -1,0 +1,68 @@
+# Cererile pentru Laboratorul 7.
+# Porniti aplicatia cu configuratia "Lab7 - Cinema FMI API" (NU cu "JDBC demo").
+# Datele raman in PostgreSQL si dupa repornire. Ca sa le resetati, rulati din nou
+# database/schema.sql si database/data.sql in pgAdmin.
+@baseUrl = http://localhost:8080
+
+### Exercitiul 2 - Toate filmele, citite din PostgreSQL
+GET {{baseUrl}}/api/movies
+
+### Exercitiul 2 - Filtrare dupa gen (WHERE genre = ?)
+GET {{baseUrl}}/api/movies?genre=Sci-Fi
+
+### Exercitiul 2 - Un singur film
+GET {{baseUrl}}/api/movies/1
+
+### Exercitiul 2 - Un film care nu exista
+GET {{baseUrl}}/api/movies/99
+
+### Exercitiul 2 - Incercare de SQL injection prin URL (ce primim?)
+GET {{baseUrl}}/api/movies?genre=x'%20OR%20'1'%3D'1
+
+### Exercitiul 3 - Adauga un film (ce id primeste?)
+POST {{baseUrl}}/api/movies
+Content-Type: application/json
+
+{
+  "title": "Wicked",
+  "genre": "Musical",
+  "price": 30
+}
+
+### Exercitiul 3 - Modifica filmul 3
+PUT {{baseUrl}}/api/movies/3
+Content-Type: application/json
+
+{
+  "title": "Barbie",
+  "genre": "Comedy",
+  "price": 27
+}
+
+### Exercitiul 3 - Modifica un film care nu exista
+PUT {{baseUrl}}/api/movies/99
+Content-Type: application/json
+
+{
+  "title": "Nu exista",
+  "genre": "Drama",
+  "price": 20
+}
+
+### Exercitiul 3 - Sterge filmul 3 (nu are proiectii)
+DELETE {{baseUrl}}/api/movies/3
+
+### Exercitiul 3 - Sterge un film care nu exista
+DELETE {{baseUrl}}/api/movies/99
+
+### Exercitiul 4 - Proiectiile filmului 1, cu titlul filmului (JOIN)
+GET {{baseUrl}}/api/movies/1/screenings
+
+### Exercitiul 4 - Filmul 6 nu are proiectii (lista goala, nu 404)
+GET {{baseUrl}}/api/movies/6/screenings
+
+### Exercitiul 4 - Filmul 3 a fost sters la exercitiul 3 (404)
+GET {{baseUrl}}/api/movies/3/screenings
+
+### Exercitiul 4 - Sterge filmul 1, care ARE proiectii (ce spune PostgreSQL?)
+DELETE {{baseUrl}}/api/movies/1

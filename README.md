@@ -49,6 +49,16 @@ programare-web-java-spring/
 │       ├── exception/
 │       ├── model/
 │       └── service/
+├── lab7/
+│   ├── pom.xml
+│   ├── requests.http
+│   ├── database/          (schema.sql, data.sql)
+│   └── src/main/java/ro/example/lab7/
+│       ├── controller/
+│       ├── exception/
+│       ├── model/
+│       ├── repository/
+│       └── service/
 ├── README.md
 └── .gitignore
 ```
@@ -60,6 +70,7 @@ programare-web-java-spring/
 - **Lab 4:** REST Web Services
 - **Lab 5:** REST: Request Params, Request Body, Response and Headers
 - **Lab 6:** REST: Input Validation, Exception Handling and Error Responses
+- **Lab 7:** JDBC and JdbcTemplate with PostgreSQL
 
 ## Requirements
 
@@ -81,7 +92,7 @@ Spring dependencies are managed automatically by Maven through each lab's `pom.x
    Alternatively, download it from GitHub with **Code → Download ZIP**.
 
 2. Open IntelliJ IDEA.
-3. Select **File → Open** and choose the folder of the lab you want, for example `lab5` or `lab6`.
+3. Select **File → Open** and choose the folder of the lab you want, for example `lab6` or `lab7`.
 4. Make sure the project uses **JDK 21**.
 5. Wait for the Maven import to finish and for the dependencies in the lab's `pom.xml` to download.
 6. Pick an exercise from the run configurations next to the **Run** button (top right), from `Ex1 - Singleton vs Prototype` to `Ex5 - Tipurile de advice`, then press **Run**.
@@ -530,3 +541,120 @@ By the end of the lab, students should be able to:
 - The `requests.http` file contains all of the lab's requests, in exercise order.
 - Spring Boot's default error body hides the exception's message. To see it, uncomment `server.error.include-message=always` in `application.properties` (for demonstration only).
 - If port 8080 is taken, uncomment `server.port=8081` in `application.properties` and change `@baseUrl` in `requests.http`.
+
+---
+
+# Lab 7: JDBC and JdbcTemplate with PostgreSQL
+
+**Duration:** 70 minutes.
+
+Until now, the **Cinema FMI** movies lived in an `ArrayList` and disappeared at every restart. Today we move them into a **PostgreSQL** database. The REST API (controllers, services, validation, error handling) is already complete; we write the layer that talks to the database:
+
+- plain **JDBC**: `DataSource`, `Connection`, `PreparedStatement`, `ResultSet`, try-with-resources;
+- why **SQL injection** happens and how `PreparedStatement` prevents it;
+- **`JdbcTemplate`** and **`RowMapper`**: the same queries with much less code;
+- `INSERT ... RETURNING id`, `UPDATE`, `DELETE`, a **JOIN** and a **foreign key**.
+
+The code to complete is in `JdbcDemoRunner.java`, `repository/MovieRepository.java`, `repository/ScreeningRepository.java` and one method in `exception/GlobalExceptionHandler.java`.
+
+## Prerequisites: PostgreSQL
+
+Install **PostgreSQL** and **pgAdmin 4** before the lab:
+
+- **Windows:** the installer from https://www.postgresql.org/download/windows/ (select PostgreSQL Server, pgAdmin 4 and Command Line Tools; keep port `5432`).
+- **macOS:** the installer from https://www.postgresql.org/download/macosx/ or [Postgres.app](https://postgresapp.com/), plus [pgAdmin](https://www.pgadmin.org/download/).
+
+Remember the password you set for the `postgres` user. The pgAdmin master password, if asked, is a different password.
+
+## Database setup (5 min)
+
+1. Open pgAdmin and connect to your local server (**Servers → PostgreSQL**).
+2. Right-click **Databases → Create → Database**, name it `cinemadb`, keep `postgres` as the owner, and click **Save**.
+3. Select `cinemadb`, open **Tools → Query Tool**, paste the contents of `lab7/database/schema.sql` and run it (**F5**).
+4. In the same Query Tool, paste and run `lab7/database/data.sql`. You should see the 6 movies.
+
+You can run both scripts again at any time to reset the data.
+
+## Running the application
+
+1. Open the `lab7` folder in IntelliJ IDEA (**File → Open → lab7**) and wait for the Maven import.
+2. Open **Run → Edit Configurations**. In **both** `Lab7 - Cinema FMI API` and `Lab7 - JDBC demo`, set the environment variable `DB_PASSWORD` to your PostgreSQL password (replace `parola_voastra`). If your user is not `postgres`, also add `DB_USERNAME`.
+3. `Lab7 - JDBC demo` runs exercise 1 (the `jdbc-demo` profile). `Lab7 - Cinema FMI API` runs the REST API, used in exercises 2–4. Run only one of them at a time: both use port 8080.
+
+**Important:** never write your password in `application.properties` and never commit it.
+
+## Learning objectives
+
+By the end of the lab, students should be able to:
+
+- Explain the JDBC architecture: the JDBC API (`java.sql`) and the database-specific driver.
+- Configure a `DataSource` in `application.properties` and explain why it is better than `DriverManager` (connection pooling).
+- Run a query with `Connection`, `PreparedStatement` and `ResultSet`, and close the resources with try-with-resources.
+- Explain SQL injection and why `PreparedStatement` with parameters prevents it.
+- Use `JdbcTemplate` with a `RowMapper` for `SELECT`, and `update()` for `INSERT`, `UPDATE` and `DELETE`.
+- Get a generated id with `INSERT ... RETURNING id`, and use the number of affected rows.
+- Write a `JOIN` and handle a foreign key violation (`DataIntegrityViolationException`).
+
+## Exercise 1: Plain JDBC (15 min)
+
+**Goal:** run a query with the JDBC interfaces and see SQL injection in action.
+
+**Tasks:**
+
+1. Run `Lab7 - JDBC demo` before changing anything. Read part 2 in the console: what query was sent, and why does it return every movie?
+2. In `JdbcDemoRunner`, open a `Connection` from the `DataSource` with try-with-resources and print its class (TODO 1.1).
+3. Create a `PreparedStatement` with a `?` parameter, bind the genre and execute the query (TODO 1.2, 1.3).
+4. Iterate through the `ResultSet` and print every movie (TODO 1.4).
+5. Pass `attack` instead of `genre` to `setString` and run again (TODO 1.5). How many movies do you get now?
+
+**Concepts:** `DataSource`, `Connection`, `PreparedStatement`, `ResultSet`, try-with-resources, SQL injection.
+
+## Exercise 2: JdbcTemplate and RowMapper (15 min)
+
+**Goal:** read data with much less code.
+
+**Tasks:**
+
+1. Run `Lab7 - Cinema FMI API` and send `GET /api/movies`. What status do you get?
+2. In `MovieRepository`, complete the `RowMapper` (TODO 2.1).
+3. Implement `findAll`, `findByGenre` and `findById` with `jdbcTemplate.query()` (TODO 2.2–2.4).
+4. Restart and run the exercise 2 requests. Then change a price directly in pgAdmin and call `GET /api/movies` again.
+5. Run the SQL injection request. What do you get, and why?
+
+**Concepts:** `JdbcTemplate`, `RowMapper`, `query()`, `Optional`.
+
+## Exercise 3: Insert, update, delete (20 min)
+
+**Goal:** change the data in the database from the REST API.
+
+**Tasks:**
+
+1. Implement `save` with `INSERT ... RETURNING id` and `queryForObject()` (TODO 3.1).
+2. Implement `update` and `deleteById` with `jdbcTemplate.update()` (TODO 3.2, 3.3).
+3. Restart and run the exercise 3 requests. Check the results in pgAdmin with `SELECT * FROM movies ORDER BY id;`.
+4. Restart the application and call `GET /api/movies`. Are the changes still there?
+5. Why does `PUT /api/movies/99` return 404? Look at `MovieService.update`.
+
+**Concepts:** `INSERT ... RETURNING`, `queryForObject()`, `update()`, affected rows, persistence.
+
+## Exercise 4: JOIN and foreign keys (15 min)
+
+**Goal:** query two related tables and handle a database constraint.
+
+**Tasks:**
+
+1. In `ScreeningRepository`, write the `JOIN` query between `screenings` and `movies` and complete the `RowMapper` (TODO 4.1, 4.2).
+2. Restart and run the exercise 4 `GET` requests. Where does `movieTitle` come from?
+3. Run `DELETE /api/movies/1`. What status do you get, and what does the console say?
+4. Handle `DataIntegrityViolationException` in `GlobalExceptionHandler` and return `409 Conflict` (TODO 4.3). Restart and run the request again.
+
+**Concepts:** `JOIN`, foreign key, `DataIntegrityViolationException`, `409 Conflict`.
+
+## Troubleshooting
+
+- **`Connection refused`:** PostgreSQL is not running, or it does not use port `5432`.
+- **`password authentication failed`:** `DB_PASSWORD` is wrong or still `parola_voastra` in the run configuration.
+- **`database "cinemadb" does not exist`:** create the database in pgAdmin (setup step 2).
+- **`relation "movies" does not exist`:** run `schema.sql` on `cinemadb`, not on the `postgres` database.
+- **`UnsupportedOperationException: TODO ...`:** that repository method is not implemented yet.
+- **`Port 8080 was already in use`:** stop the other configuration (`JDBC demo` or `Cinema FMI API`) or the application from the previous lab.
